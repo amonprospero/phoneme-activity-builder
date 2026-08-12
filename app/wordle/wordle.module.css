@@ -1,0 +1,51 @@
+.page h1 {
+  color: var(--primary);
+  margin-bottom: 8px;
+  font-size: 1.6rem;
+}
+
+.intro {
+  color: var(--muted);
+  margin-bottom: 22px;
+  font-size: 0.95rem;
+  max-width: 700px;
+}
+
+.msg {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #ecfdf5;
+  color: #065f46;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.kbPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 420px;
+}
+
+.kbRow {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.kbKey {
+  min-width: 34px;
+  padding: 6px 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: default;
+}
+
+.kbKey:hover {
+  background: var(--highlight);
+}

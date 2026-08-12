@@ -1,0 +1,25 @@
+.about h1 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+}
+
+.about h2 {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.about p {
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.list {
+  margin: 10px 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.list li {
+  margin-bottom: 6px;
+}

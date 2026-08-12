@@ -1,0 +1,31 @@
+.page h1 {
+  color: var(--primary);
+  margin-bottom: 8px;
+  font-size: 1.6rem;
+}
+
+.intro {
+  color: var(--muted);
+  margin-bottom: 22px;
+  font-size: 0.95rem;
+  max-width: 700px;
+}
+
+.msg {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #ecfdf5;
+  color: #065f46;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.helpList {
+  margin-left: 18px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.helpList li {
+  margin-bottom: 6px;
+}
