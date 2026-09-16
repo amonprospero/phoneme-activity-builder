@@ -1,10 +1,13 @@
-# Phoneme Activity Builder – Assessment 1
+# Phoneme Activity Builder – Assessment 2
 
-Frontend builder for phoneme-based Wordle (Phonemele) and Word Search activities.
+Backend, database and Docker layer for the Assessment 1 frontend builder.
 
 **Subject:** Cloud-based Web Application  
 **Student:** Timothy Felix Satria  
 **Student number:** 22465538  
+
+GitHub repository (replace with your link):  
+`https://github.com/YOUR-USERNAME/phoneme-activity-builder`
 
 ## How this project was created
 
@@ -12,55 +15,61 @@ Frontend builder for phoneme-based Wordle (Phonemele) and Word Search activities
 npx create-next-app@14 . --js --eslint --no-tailwind --no-src-dir --app --import-alias "@/*" --use-npm
 ```
 
+Then Prisma, SQLite, API routes and Docker were added for Assessment 2.
+
+## What was added in Assessment 2
+
+- Prisma schema for activity sets and phoneme words
+- REST APIs for create / read / update / delete
+- `/health` returns 200 OK
+- Words page to manage saved lists
+- Wordle and Word Search can load stored data before generating HTML
+- Dockerfile and docker-compose
+
+Phonemes that use more than one character (`tʃ`, `iː`, `æɪ`) are stored as a space-separated string, for example `tʃ ɪ n`.
+
 ## Pages
 
-- `/` – Home
-- `/about` – Project explanation and student details
-- `/wordle` – Wordle (Phonemele) builder → downloads a playable HTML file
-- `/wordsearch` – Word Search builder → downloads a playable HTML file
-- `/settings` – Light / Dark theme (saved in a cookie)
+- `/` Home
+- `/words` CRUD for activity sets and words
+- `/wordle` Wordle builder (can load saved sets)
+- `/wordsearch` Word Search builder (can load saved sets)
+- `/about` About
+- `/settings` Theme
+- `/health` Health check JSON
 
-## How to run
+## API
+
+- `GET /health`
+- `GET /api/activities` and `GET /api/activities?type=WORDLE`
+- `POST /api/activities`
+- `GET /api/activities/:id`
+- `PUT /api/activities/:id`
+- `DELETE /api/activities/:id`
+- `POST /api/activities/:id/words`
+- `PUT /api/words/:id`
+- `DELETE /api/words/:id`
+
+## Run locally
 
 ```bash
 npm install
+npx prisma generate
+npx prisma db push
+npx prisma db seed
 npm run dev
 ```
 
-Open http://localhost:3000 in your browser.
+Open http://localhost:3000
 
-## How to generate an activity
+## Run with Docker
 
-1. Go to the Wordle or Word Search page
-2. Enter the phoneme word(s) and options
-3. Click **GENERATE HTML**
-4. Open the downloaded `.html` file in any browser (no server needed)
-
-## Technical notes (Assessment 1)
-
-- React with Next.js App Router and modular components
-- Responsive layout with hamburger menu for mobile
-- Pure CSS (CSS variables for light/dark theme)
-- Generated activities are single, self-contained HTML files
-- Phoneme keyboard and sample words based on the provided HCE corpus
-- Hover hints on keyboard keys
-- No database yet (planned for later assessments)
-
-## Folder structure
-
+```bash
+docker compose up --build
 ```
-app/
-  page.js              # Home
-  about/page.js
-  wordle/page.js
-  wordsearch/page.js
-  settings/page.js
-  layout.js
-  globals.css
-components/
-  Header.js
-  Footer.js
-  ThemeProvider.js
-lib/
-  phonemes.js          # keyboard, hints, sample words
-```
+
+Then open http://localhost:3000 and http://localhost:3000/health
+
+## Submit
+
+Remove `node_modules` and `.next` before zipping.

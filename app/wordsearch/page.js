@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DEFAULT_WORDSEARCH_WORDS } from '../../lib/phonemes';
 import styles from './wordsearch.module.css';
 
@@ -260,6 +260,27 @@ export default function WordSearchPage() {
   const [rows, setRows] = useState(10);
   const [cols, setCols] = useState(10);
   const [msg, setMsg] = useState('');
+  const [savedSets, setSavedSets] = useState([]);
+  const [chosenSet, setChosenSet] = useState('');
+
+  useEffect(() => {
+    fetch('/api/activities?type=WORDSEARCH')
+      .then((r) => r.json())
+      .then((data) => setSavedSets(Array.isArray(data) ? data : []))
+      .catch(() => setSavedSets([]));
+  }, []);
+
+  const loadFromDatabase = () => {
+    const set = savedSets.find((s) => String(s.id) === String(chosenSet));
+    if (!set || !set.words || set.words.length === 0) {
+      setMsg('Select a saved Word Search set that has words.');
+      return;
+    }
+    setWordText(set.words.map((w) => w.phonemeString).join('\n'));
+    setRows(set.gridRows);
+    setCols(set.gridCols);
+    setMsg(`Loaded ${set.words.length} words from “${set.title}”.`);
+  };
 
   const handleGenerate = () => {
     const lines = wordText.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -294,6 +315,25 @@ export default function WordSearchPage() {
 
       <div className="two-col">
         <div className="panel">
+          <div className="form-group">
+            <label htmlFor="savedSet">Load from saved Word Search set</label>
+            <select
+              id="savedSet"
+              value={chosenSet}
+              onChange={(e) => setChosenSet(e.target.value)}
+              style={{ width: '100%' }}
+            >
+              <option value="">— choose a saved set —</option>
+              {savedSets.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.title} ({s.words.length} words)
+                </option>
+              ))}
+            </select>
+            <button type="button" className="btn btn-secondary" style={{ marginTop: 8, fontSize: '0.85rem', padding: '6px 10px' }} onClick={loadFromDatabase}>
+              Load words from database
+            </button>
+          </div>
           <div className="form-group">
             <label htmlFor="words">Words (one phoneme sequence per line)</label>
             <textarea

@@ -8,8 +8,9 @@ export default function Home() {
         <h1>Phoneme Activity Builder</h1>
         <p className={styles.lead}>
           A simple tool that helps Speech Pathology teachers create phoneme-based classroom activities.
-          Build a Wordle-style game or a Word Search using HCE phoneme symbols, then download a single
-          HTML file that runs in any web browser.
+          Build a Wordle-style game or a Word Search using HCE phoneme symbols. Word lists and
+          activity settings are stored in a database. You can still download a single HTML file
+          that runs in any web browser.
         </p>
         <div className={styles.ctaRow}>
           <Link href="/wordle" className="btn">
@@ -39,6 +40,14 @@ export default function Home() {
           <Link href="/wordsearch" className={styles.moreLink}>Go to Word Search builder →</Link>
         </div>
         <div className="panel">
+          <h2>Saved word lists</h2>
+          <p>
+            Create, edit and delete phoneme word lists on the Words page. Those saved
+            sets can be loaded into Wordle or Word Search before you generate HTML.
+          </p>
+          <Link href="/words" className={styles.moreLink}>Manage words →</Link>
+        </div>
+        <div className="panel">
           <h2>Why phonemes?</h2>
           <p>
             This tool is designed for Speech Pathology teaching, not for clients.
@@ -51,9 +60,8 @@ export default function Home() {
 
       <section className={styles.note}>
         <p>
-          <strong>Assessment 1 note:</strong> This stage focuses on the frontend only
-          (interface, preview, and HTML generation). Word lists and database features
-          will be added in later assessments.
+          <strong>Assessment 2:</strong> The builder now uses a Prisma + SQLite database,
+          REST APIs, and Docker. Check <code>/health</code> for a 200 OK response.
         </p>
       </section>
     </div>

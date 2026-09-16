@@ -1,0 +1,35 @@
+.wrap { max-width: 960px; margin: 0 auto; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+.col { flex: 1 1 280px; }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.card {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #ddd);
+  border-radius: 8px;
+  padding: 12px;
+}
+.card h3 { margin: 0 0 6px; font-size: 1rem; }
+.meta { font-size: 0.8rem; color: #64748b; margin-bottom: 8px; }
+.wordRow { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid #eee; }
+.wordRow:last-child { border-bottom: none; }
+.actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.err { color: #b91c1c; font-size: 0.9rem; margin: 8px 0; }
+.ok { color: #166534; font-size: 0.9rem; margin: 8px 0; }
+.card :global(label) {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 8px 0 4px;
+}
+.card :global(input),
+.card :global(select),
+.card :global(textarea) {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+.card :global(textarea) {
+  min-height: 60px;
+}
+.btnRow { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }

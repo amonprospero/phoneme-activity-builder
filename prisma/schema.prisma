@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// One saved classroom activity (Wordle or Word Search)
+model ActivitySet {
+  id           Int      @id @default(autoincrement())
+  title        String
+  activityType String   // WORDLE | WORDSEARCH
+  difficulty   String   @default("medium") // easy | medium | hard
+  showHints    Boolean  @default(true)
+  maxGuesses   Int      @default(6)
+  gridRows     Int      @default(10)
+  gridCols     Int      @default(10)
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  words        Word[]
+}
+
+// One English word plus its HCE phoneme sequence
+// Phonemes that use more than one character (tʃ, iː, æɪ) are stored
+// as a space-separated string, e.g. "tʃ ɪ n"
+model Word {
+  id            Int          @id @default(autoincrement())
+  english       String
+  phonemeString String
+  activitySetId Int
+  activitySet   ActivitySet  @relation(fields: [activitySetId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}

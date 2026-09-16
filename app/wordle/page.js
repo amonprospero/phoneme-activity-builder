@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PHONEME_KEYBOARD, PHONEME_HINTS, SAMPLE_WORDS_3 } from '../../lib/phonemes';
 import styles from './wordle.module.css';
 
@@ -191,6 +191,29 @@ export default function WordlePage() {
   const [showHints, setShowHints] = useState(true);
   const [maxGuesses, setMaxGuesses] = useState(6);
   const [previewMsg, setPreviewMsg] = useState('');
+  const [savedSets, setSavedSets] = useState([]);
+  const [chosenSet, setChosenSet] = useState('');
+
+  useEffect(() => {
+    fetch('/api/activities?type=WORDLE')
+      .then((r) => r.json())
+      .then((data) => setSavedSets(Array.isArray(data) ? data : []))
+      .catch(() => setSavedSets([]));
+  }, []);
+
+  const loadFromDatabase = () => {
+    const set = savedSets.find((s) => String(s.id) === String(chosenSet));
+    if (!set || !set.words || set.words.length === 0) {
+      setPreviewMsg('Select a saved Wordle set that has words.');
+      return;
+    }
+    const word = set.words[Math.floor(Math.random() * set.words.length)];
+    setPhonemeInput(word.phonemeString);
+    setEnglish(word.english);
+    setShowHints(set.showHints);
+    setMaxGuesses(set.maxGuesses);
+    setPreviewMsg(`Loaded “${word.english}” from saved set “${set.title}”.`);
+  };
 
   const handleGenerate = () => {
     const parts = phonemeInput.trim().split(/\s+/).filter(Boolean);
@@ -229,12 +252,32 @@ export default function WordlePage() {
     <div className={styles.page}>
       <h1>Wordle Builder (Phonemele)</h1>
       <p className={styles.intro}>
-        Configure one phoneme-based Wordle game. Students guess the sequence of phoneme symbols.
-        Click Generate to download a single playable HTML file.
+        Configure a phoneme Wordle game. You can type a word here, or load one from a saved
+        database set (Words page). Generate still downloads a single HTML file.
       </p>
 
       <div className="two-col">
         <div className="panel">
+          <div className="form-group">
+            <label htmlFor="savedSet">Load from saved Wordle set</label>
+            <select
+              id="savedSet"
+              value={chosenSet}
+              onChange={(e) => setChosenSet(e.target.value)}
+              style={{ width: '100%' }}
+            >
+              <option value="">— choose a saved set —</option>
+              {savedSets.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.title} ({s.words.length} words)
+                </option>
+              ))}
+            </select>
+            <button type="button" className="btn btn-secondary" style={{ marginTop: 8, fontSize: '0.85rem', padding: '6px 10px' }} onClick={loadFromDatabase}>
+              Load random word from set
+            </button>
+          </div>
+
           <div className="form-group">
             <label htmlFor="phonemeWord">Phoneme Word (space-separated)</label>
             <input
