@@ -4,7 +4,7 @@ Student: Timothy Felix Satria · 22465538
 
 GitHub repository (after you push, paste the real URL here and in Moodle):
 
-https://github.com/YOUR-GITHUB-USERNAME/phoneme-activity-builder
+[https://github.com/YOUR-GITHUB-USERNAME/phoneme-activity-builder](https://github.com/amonprospero/phoneme-activity-builder)
 
 Do not leave the line above as a placeholder. The marker checks the homepage and the commit history.
 
