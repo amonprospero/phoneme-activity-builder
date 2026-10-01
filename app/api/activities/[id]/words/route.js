@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../../lib/prisma';
 import { validateWordPayload } from '../../../../../lib/validate';
+import { flattenWord, unitRows } from '../../../../../lib/serialize';
 
 export async function POST(request, { params }) {
   const activitySetId = Number(params.id);
@@ -14,9 +15,15 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: errors.join(' ') }, { status: 400 });
     }
     const word = await prisma.word.create({
-      data: { english, phonemeString, activitySetId },
+      data: {
+        english,
+        phonemeString,
+        wordListId: parent.wordListId,
+        units: { create: unitRows(phonemeString) },
+      },
+      include: { units: { orderBy: { position: 'asc' } } },
     });
-    return NextResponse.json(word, { status: 201 });
+    return NextResponse.json(flattenWord(word), { status: 201 });
   } catch {
     return NextResponse.json({ error: 'Could not add word.' }, { status: 500 });
   }

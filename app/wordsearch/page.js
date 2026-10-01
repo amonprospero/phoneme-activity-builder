@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DEFAULT_WORDSEARCH_WORDS } from '../../lib/phonemes';
+import { logEvent } from '../../lib/logEvent';
 import styles from './wordsearch.module.css';
 
 function buildWordSearchHtml({ wordLines, rows, cols }) {
@@ -286,10 +287,12 @@ export default function WordSearchPage() {
     const lines = wordText.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
     if (lines.length === 0) {
       setMsg('Please enter at least one phoneme word (one per line).');
+      logEvent({ kind: 'GENERATE_FAIL', activityType: 'WORDSEARCH', path: '/wordsearch', note: 'empty list' });
       return;
     }
     if (lines.length > 12) {
       setMsg('Please keep the list around 5–10 words for this assessment.');
+      logEvent({ kind: 'GENERATE_FAIL', activityType: 'WORDSEARCH', path: '/wordsearch', note: 'too many words' });
       return;
     }
     const r = Number(rows) || 10;
@@ -303,6 +306,7 @@ export default function WordSearchPage() {
     a.click();
     URL.revokeObjectURL(url);
     setMsg('Word Search HTML downloaded! Open in browser to play.');
+    logEvent({ kind: 'GENERATE_SUCCESS', activityType: 'WORDSEARCH', path: '/wordsearch', note: `${lines.length} words` });
   };
 
   return (

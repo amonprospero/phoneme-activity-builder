@@ -1,56 +1,24 @@
-# Phoneme Activity Builder – Assessment 2
+# Phoneme Activity Builder – Assessment 3
 
-Backend, database and Docker layer for the Assessment 1 frontend builder.
+Student: Timothy Felix Satria · 22465538
 
-**Subject:** Cloud-based Web Application  
-**Student:** Timothy Felix Satria  
-**Student number:** 22465538  
+GitHub repository (after you push, paste the real URL here and in Moodle):
 
-GitHub repository (replace with your link):  
-`https://github.com/YOUR-USERNAME/phoneme-activity-builder`
+https://github.com/YOUR-GITHUB-USERNAME/phoneme-activity-builder
 
-## How this project was created
+Do not leave the line above as a placeholder. The marker checks the homepage and the commit history.
 
-```bash
-npx create-next-app@14 . --js --eslint --no-tailwind --no-src-dir --app --import-alias "@/*" --use-npm
-```
+## Data model (feedback fix)
 
-Then Prisma, SQLite, API routes and Docker were added for Assessment 2.
-
-## What was added in Assessment 2
-
-- Prisma schema for activity sets and phoneme words
-- REST APIs for create / read / update / delete
-- `/health` returns 200 OK
-- Words page to manage saved lists
-- Wordle and Word Search can load stored data before generating HTML
-- Dockerfile and docker-compose
-
-Phonemes that use more than one character (`tʃ`, `iː`, `æɪ`) are stored as a space-separated string, for example `tʃ ɪ n`.
-
-## Pages
-
-- `/` Home
-- `/words` CRUD for activity sets and words
-- `/wordle` Wordle builder (can load saved sets)
-- `/wordsearch` Word Search builder (can load saved sets)
-- `/about` About
-- `/settings` Theme
-- `/health` Health check JSON
-
-## API
-
-- `GET /health`
-- `GET /api/activities` and `GET /api/activities?type=WORDLE`
-- `POST /api/activities`
-- `GET /api/activities/:id`
-- `PUT /api/activities/:id`
-- `DELETE /api/activities/:id`
-- `POST /api/activities/:id/words`
-- `PUT /api/words/:id`
-- `DELETE /api/words/:id`
+- `WordList` is reusable. Wordle and Word Search can share one list.
+- `Word` belongs to a list, not to one activity only.
+- `PhonemeUnit` stores each symbol in order (`tʃ` position 0, `ɪ` position 1, `n` position 2).
+- `ActivitySet` points at a `WordList`.
+- `UsageEvent` stores dashboard metrics.
 
 ## Run locally
+
+If you already have an old SQLite file from Assessment 2, delete `prisma/dev.db` first, then:
 
 ```bash
 npm install
@@ -60,16 +28,47 @@ npx prisma db seed
 npm run dev
 ```
 
-Open http://localhost:3000
+Open:
+- http://localhost:3000/words
+- http://localhost:3000/dashboard
+- http://localhost:3000/health  (200 when the database is up, 503 if it is not)
 
-## Run with Docker
+## Docker
+
+Compose has two services: `app` (Next.js production `npm start`) and `proxy` (nginx).
+SQLite is stored in the named volume `phoneme-db`.
 
 ```bash
 docker compose up --build
 ```
 
-Then open http://localhost:3000 and http://localhost:3000/health
+Then http://localhost:3000
 
-## Submit
+## Playwright
 
-Remove `node_modules` and `.next` before zipping.
+```bash
+npx playwright install chromium
+npx playwright test
+```
+
+## JMeter
+
+See `jmeter/RESULTS.md` and `jmeter/phoneme-load.jmx`.
+
+## Lighthouse
+
+See `docs/LIGHTHOUSE.md`.
+
+## References (APA 7)
+
+Fielding, R. T., & Reschke, K. (2022). *HTTP semantics* (RFC 9110). IETF. https://www.rfc-editor.org/rfc/rfc9110
+
+Google. (n.d.). *Lighthouse accessibility scoring*. Chrome Developers. https://developer.chrome.com/docs/lighthouse/accessibility/scoring
+
+Microsoft. (n.d.). *Playwright documentation*. https://playwright.dev/docs/intro
+
+Next.js. (n.d.). *Data fetching and route handlers*. Vercel. https://nextjs.org/docs
+
+Prisma. (n.d.). *Prisma schema reference*. https://www.prisma.io/docs/orm/prisma-schema
+
+W3C. (2018). *Web content accessibility guidelines (WCAG) 2.1*. https://www.w3.org/TR/WCAG21/

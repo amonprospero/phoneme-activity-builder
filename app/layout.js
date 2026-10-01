@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ThemeProvider from "../components/ThemeProvider";
+import TimeTracker from "../components/TimeTracker";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,9 +26,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider>
+          <a className="skip-link" href="#main-content">Skip to main content</a>
           <div className="app-wrapper">
             <Header />
-            <main className="main-content">
+            <main id="main-content" className="main-content" tabIndex={-1}>
+              <TimeTracker />
               {children}
             </main>
             <Footer />

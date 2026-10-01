@@ -12,10 +12,12 @@ const emptySet = {
   gridRows: 10,
   gridCols: 10,
   notes: '',
+  wordListId: '',
 };
 
 export default function WordsPage() {
   const [sets, setSets] = useState([]);
+  const [lists, setLists] = useState([]);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState(emptySet);
   const [wordForm, setWordForm] = useState({ english: '', phonemeString: '' });
@@ -24,9 +26,14 @@ export default function WordsPage() {
   const [info, setInfo] = useState('');
 
   async function load() {
-    const res = await fetch('/api/activities');
+    const [res, listRes] = await Promise.all([
+      fetch('/api/activities'),
+      fetch('/api/wordlists'),
+    ]);
     const data = await res.json();
-    setSets(data);
+    const listData = await listRes.json();
+    setSets(Array.isArray(data) ? data : []);
+    setLists(Array.isArray(listData) ? listData : []);
     if (selected) {
       const fresh = data.find((s) => s.id === selected.id);
       setSelected(fresh || null);
@@ -56,6 +63,7 @@ export default function WordsPage() {
         maxGuesses: Number(form.maxGuesses),
         gridRows: Number(form.gridRows),
         gridCols: Number(form.gridCols),
+        wordListId: form.wordListId ? Number(form.wordListId) : undefined,
       }),
     });
     const data = await res.json();
@@ -74,12 +82,13 @@ export default function WordsPage() {
       gridRows: data.gridRows,
       gridCols: data.gridCols,
       notes: data.notes,
+      wordListId: data.wordListId || '',
     });
     load();
   }
 
   async function deleteSet(id) {
-    if (!confirm('Delete this activity set and all its words?')) return;
+    if (!confirm('Delete this activity set? The shared word list is kept.')) return;
     await fetch(`/api/activities/${id}`, { method: 'DELETE' });
     setSelected(null);
     setForm(emptySet);
@@ -99,6 +108,7 @@ export default function WordsPage() {
       gridRows: set.gridRows,
       gridCols: set.gridCols,
       notes: set.notes || '',
+      wordListId: set.wordListId || '',
     });
   }
 
@@ -139,9 +149,9 @@ export default function WordsPage() {
     <div className={styles.wrap}>
       <h1>Word lists and activity sets</h1>
       <p>
-        This page talks to the database. You can create, read, update and delete activity
-        sets and the phoneme words inside them. Separate phonemes with spaces, even when
-        one symbol uses more than one character (example: tʃ ɪ n).
+        This page talks to the database. Word lists are reusable — one list can be attached
+        to both a Wordle set and a Word Search set. Phonemes are stored in order
+        (tʃ is one unit, then ɪ, then n).
       </p>
       {error && <p className={styles.err}>{error}</p>}
       {info && <p className={styles.ok}>{info}</p>}
@@ -154,7 +164,7 @@ export default function WordsPage() {
               <div key={s.id} className={styles.card}>
                 <h3>{s.title}</h3>
                 <div className={styles.meta}>
-                  {s.activityType} · {s.difficulty} · {s.words.length} words
+                  {s.activityType} · list {s.wordListTitle || s.wordListId} · {(s.words || []).length} words
                 </div>
                 <div className={styles.actions}>
                   <button className="btn" type="button" onClick={() => pick(s)}>Open</button>
@@ -170,7 +180,7 @@ export default function WordsPage() {
           <h2>{selected ? `Edit set #${selected.id}` : 'Create a new set'}</h2>
           <form onSubmit={saveSet} className={styles.card}>
             <label>Title</label>
-            <input name="title" value={form.title} onChange={onChange} required />
+            <input name="title" value={form.title} onChange={onChange} required data-testid="set-title" />
             <label>Activity type</label>
             <select name="activityType" value={form.activityType} onChange={onChange}>
               <option value="WORDLE">WORDLE</option>
@@ -190,10 +200,19 @@ export default function WordsPage() {
             <label>
               <input name="showHints" type="checkbox" checked={form.showHints} onChange={onChange} /> Show hints
             </label>
+            <label>Reuse an existing word list (optional)</label>
+            <select name="wordListId" value={form.wordListId} onChange={onChange}>
+              <option value="">— create a new list —</option>
+              {lists.map((list) => (
+                <option key={list.id} value={list.id}>
+                  {list.title} ({(list.words || []).length} words)
+                </option>
+              ))}
+            </select>
             <label>Notes</label>
             <textarea name="notes" value={form.notes} onChange={onChange} />
             <div className={styles.btnRow}>
-              <button className="btn" type="submit">{selected ? 'Update set' : 'Create set'}</button>
+              <button className="btn" type="submit" data-testid="save-set">{selected ? 'Update set' : 'Create set'}</button>
               <button
                 className="btn btn-secondary"
                 type="button"
@@ -215,15 +234,17 @@ export default function WordsPage() {
                 value={wordForm.english}
                 onChange={(e) => setWordForm({ ...wordForm, english: e.target.value })}
                 placeholder="chin"
+                data-testid="word-english"
               />
               <label>Phonemes (space separated)</label>
               <input
                 value={wordForm.phonemeString}
                 onChange={(e) => setWordForm({ ...wordForm, phonemeString: e.target.value })}
                 placeholder="tʃ ɪ n"
+                data-testid="word-phonemes"
               />
               <div className={styles.btnRow}>
-                <button className="btn" type="submit">{editingWord ? 'Update word' : 'Add word'}</button>
+                <button className="btn" type="submit" data-testid="save-word">{editingWord ? 'Update word' : 'Add word'}</button>
                 {editingWord && (
                   <button className="btn btn-secondary" type="button" onClick={() => { setEditingWord(null); setWordForm({ english: '', phonemeString: '' }); }}>
                     Cancel

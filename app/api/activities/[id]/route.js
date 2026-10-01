@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../lib/prisma';
 import { validateActivityPayload } from '../../../../lib/validate';
+import { activityInclude, flattenActivity } from '../../../../lib/serialize';
 
 export async function GET(_request, { params }) {
   const id = Number(params.id);
   if (!id) return NextResponse.json({ error: 'Invalid id.' }, { status: 400 });
   const set = await prisma.activitySet.findUnique({
     where: { id },
-    include: { words: { orderBy: { id: 'asc' } } },
+    include: activityInclude,
   });
   if (!set) return NextResponse.json({ error: 'Activity set not found.' }, { status: 404 });
-  return NextResponse.json(set);
+  return NextResponse.json(flattenActivity(set));
 }
 
 export async function PUT(request, { params }) {
@@ -31,12 +32,13 @@ export async function PUT(request, { params }) {
     if (body.gridRows !== undefined) data.gridRows = Number(body.gridRows);
     if (body.gridCols !== undefined) data.gridCols = Number(body.gridCols);
     if (body.notes !== undefined) data.notes = String(body.notes);
+    if (body.wordListId !== undefined) data.wordListId = Number(body.wordListId);
     const updated = await prisma.activitySet.update({
       where: { id },
       data,
-      include: { words: { orderBy: { id: 'asc' } } },
+      include: activityInclude,
     });
-    return NextResponse.json(updated);
+    return NextResponse.json(flattenActivity(updated));
   } catch {
     return NextResponse.json({ error: 'Could not update activity set.' }, { status: 404 });
   }

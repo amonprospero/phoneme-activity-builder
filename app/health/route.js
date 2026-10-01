@@ -10,8 +10,8 @@ export async function GET() {
     );
   } catch (error) {
     return NextResponse.json(
-      { status: 'degraded', service: 'phoneme-activity-builder', database: 'error', message: error.message },
-      { status: 200 }
+      { status: 'error', service: 'phoneme-activity-builder', database: 'unavailable', message: error.message },
+      { status: 503 }
     );
   }
 }

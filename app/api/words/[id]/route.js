@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../lib/prisma';
 import { validateWordPayload } from '../../../../lib/validate';
+import { flattenWord, unitRows } from '../../../../lib/serialize';
 
 export async function PUT(request, { params }) {
   const id = Number(params.id);
@@ -11,11 +12,17 @@ export async function PUT(request, { params }) {
     if (errors.length) {
       return NextResponse.json({ error: errors.join(' ') }, { status: 400 });
     }
+    await prisma.phonemeUnit.deleteMany({ where: { wordId: id } });
     const word = await prisma.word.update({
       where: { id },
-      data: { english, phonemeString },
+      data: {
+        english,
+        phonemeString,
+        units: { create: unitRows(phonemeString) },
+      },
+      include: { units: { orderBy: { position: 'asc' } } },
     });
-    return NextResponse.json(word);
+    return NextResponse.json(flattenWord(word));
   } catch {
     return NextResponse.json({ error: 'Word not found.' }, { status: 404 });
   }

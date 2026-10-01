@@ -7,31 +7,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// One saved classroom activity (Wordle or Word Search)
-model ActivitySet {
-  id           Int      @id @default(autoincrement())
-  title        String
-  activityType String   // WORDLE | WORDSEARCH
-  difficulty   String   @default("medium") // easy | medium | hard
-  showHints    Boolean  @default(true)
-  maxGuesses   Int      @default(6)
-  gridRows     Int      @default(10)
-  gridCols     Int      @default(10)
-  notes        String   @default("")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  words        Word[]
+// Reusable classroom word list. One list can be attached to many activities.
+model WordList {
+  id          Int           @id @default(autoincrement())
+  title       String
+  notes       String        @default("")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  words       Word[]
+  activities  ActivitySet[]
 }
 
-// One English word plus its HCE phoneme sequence
-// Phonemes that use more than one character (tʃ, iː, æɪ) are stored
-// as a space-separated string, e.g. "tʃ ɪ n"
+// One English item inside a reusable WordList
 model Word {
-  id            Int          @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   english       String
   phonemeString String
-  activitySetId Int
-  activitySet   ActivitySet  @relation(fields: [activitySetId], references: [id], onDelete: Cascade)
+  wordListId    Int
+  wordList      WordList      @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+  units         PhonemeUnit[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+// Ordered phoneme records. Multi-character symbols stay in one row (tʃ, iː).
+model PhonemeUnit {
+  id       Int    @id @default(autoincrement())
+  symbol   String
+  position Int
+  wordId   Int
+  word     Word   @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([wordId, position])
+}
+
+model ActivitySet {
+  id           Int       @id @default(autoincrement())
+  title        String
+  activityType String
+  difficulty   String    @default("medium")
+  showHints    Boolean   @default(true)
+  maxGuesses   Int       @default(6)
+  gridRows     Int       @default(10)
+  gridCols     Int       @default(10)
+  notes        String    @default("")
+  wordListId   Int
+  wordList     WordList  @relation(fields: [wordListId], references: [id], onDelete: Restrict)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  events       UsageEvent[]
+}
+
+model UsageEvent {
+  id            Int          @id @default(autoincrement())
+  kind          String
+  activityType  String       @default("")
+  path          String       @default("")
+  durationMs    Int          @default(0)
+  note          String       @default("")
+  activitySetId Int?
+  activitySet   ActivitySet? @relation(fields: [activitySetId], references: [id], onDelete: SetNull)
   createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
 }

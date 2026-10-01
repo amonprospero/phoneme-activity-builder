@@ -48,6 +48,14 @@ export default function Home() {
           <Link href="/words" className={styles.moreLink}>Manage words →</Link>
         </div>
         <div className="panel">
+          <h2>Operations dashboard</h2>
+          <p>
+            See how many activities are stored, successful and failed HTML downloads,
+            average time on page, and health alerts.
+          </p>
+          <Link href="/dashboard" className={styles.moreLink}>Open dashboard →</Link>
+        </div>
+        <div className="panel">
           <h2>Why phonemes?</h2>
           <p>
             This tool is designed for Speech Pathology teaching, not for clients.
@@ -60,8 +68,8 @@ export default function Home() {
 
       <section className={styles.note}>
         <p>
-          <strong>Assessment 2:</strong> The builder now uses a Prisma + SQLite database,
-          REST APIs, and Docker. Check <code>/health</code> for a 200 OK response.
+          <strong>Assessment 3:</strong> The builder now reports stored usage on the
+          dashboard. Check <code>/dashboard</code> and <code>/health</code>.
         </p>
       </section>
     </div>

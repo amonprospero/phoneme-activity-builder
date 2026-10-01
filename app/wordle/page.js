@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { PHONEME_KEYBOARD, PHONEME_HINTS, SAMPLE_WORDS_3 } from '../../lib/phonemes';
+import { logEvent } from '../../lib/logEvent';
 import styles from './wordle.module.css';
 
 function buildWordleHtml({ phonemeArr, english, maxGuesses, showHints }) {
@@ -219,10 +220,12 @@ export default function WordlePage() {
     const parts = phonemeInput.trim().split(/\s+/).filter(Boolean);
     if (parts.length < 2) {
       setPreviewMsg('Please enter at least 2 phonemes separated by space.');
+      logEvent({ kind: 'GENERATE_FAIL', activityType: 'WORDLE', path: '/wordle', note: 'too few phonemes' });
       return;
     }
     if (parts.length > 6) {
       setPreviewMsg('Maximum 6 phonemes for this assessment.');
+      logEvent({ kind: 'GENERATE_FAIL', activityType: 'WORDLE', path: '/wordle', note: 'too many phonemes' });
       return;
     }
     const html = buildWordleHtml({
@@ -239,6 +242,7 @@ export default function WordlePage() {
     a.click();
     URL.revokeObjectURL(url);
     setPreviewMsg('HTML file downloaded! Open it in any browser to play.');
+    logEvent({ kind: 'GENERATE_SUCCESS', activityType: 'WORDLE', path: '/wordle', note: english || parts.join(' ') });
   };
 
   const loadSample = () => {
@@ -332,7 +336,7 @@ export default function WordlePage() {
             />
           </div>
 
-          <button type="button" className="btn btn-block" onClick={handleGenerate}>
+          <button type="button" className="btn btn-block" onClick={handleGenerate} data-testid="generate-wordle">
             GENERATE HTML
           </button>
 

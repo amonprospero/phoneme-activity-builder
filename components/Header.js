@@ -19,6 +19,7 @@ export default function Header() {
     { href: '/wordle', label: 'WORDLE' },
     { href: '/wordsearch', label: 'WORDSEARCH' },
     { href: '/words', label: 'WORDS' },
+    { href: '/dashboard', label: 'DASHBOARD' },
     { href: '/about', label: 'ABOUT' },
     { href: '/settings', label: 'SETTING' },
   ];
@@ -30,7 +31,7 @@ export default function Header() {
           <Link href="/" className={styles.logoLink}>
             <span className={styles.logoText}>Phoneme Activity Builder</span>
           </Link>
-          <span className={styles.subtitle}>Cloud-based Web Application · Assessment 2</span>
+          <span className={styles.subtitle}>Cloud-based Web Application · Assessment 3</span>
         </div>
 
         {/* Desktop nav */}
