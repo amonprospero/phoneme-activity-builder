@@ -2,8 +2,6 @@
 
 Student: Timothy Felix Satria · 22465538
 
-GitHub repository (after you push, paste the real URL here and in Moodle):
-
 https://github.com/amonprospero/phoneme-activity-builder
 
 ## Data model (feedback fix)
